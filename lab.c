@@ -100,7 +100,13 @@ void print(struct Node * root){
 	}
 }
 
-
+void printFile(struct Node * root, FILE * opf){
+	if(root != NULL){
+		printFile(root -> rightChild, opf);
+		fprintf(opf,"%s\n",root -> name);
+		printFile(root -> leftChild, opf);
+	}
+}
 
 int main(void) {
 	//First we must read the file
@@ -115,13 +121,11 @@ int main(void) {
 
 	//While reading we want to insert
 	struct Node * root = NULL;
-	int i,lines =0;
-
-	//
-	//	char *contents;
-	//	size_t len = 0;
-	//	while(getline(&contents, &len,	ipf)!=EOF){
-	//		root=insert(root,contents);
+	//	int i,lines =0;
+	//	char line[50];
+	//	for(i=0; i< 3; i++){
+	//		fscanf(ipf, "%s", line);
+	//		root=insert(root,line);
 	//	}
 
 	root=insert(root,"Steve Jobs");
@@ -168,7 +172,11 @@ int main(void) {
 	//			}
 	//
 	//		}
+	opf = fopen("names.txt", "w");
+
+	printFile(root,opf);
 
 	fclose(ipf);
+	fclose(opf);
 	return EXIT_SUCCESS;
 }
