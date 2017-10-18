@@ -25,6 +25,7 @@ struct Node * newNode(char * name){
 }
 
 struct Node * insert(struct Node * node, char * name){
+	//Notice in this block we will determine if right or left leaning
 	if(node == NULL){
 		return newNode(name);
 	}
@@ -42,12 +43,60 @@ struct Node * insert(struct Node * node, char * name){
 	return node;
 }
 
+struct Node * delete(struct Node * node, char * name){
+	if(strcmp(name, node->name)==0){
+		if(node->leftChild==NULL&&node->rightChild==NULL){
+			node=NULL;
+		}
+		else if((node->leftChild==NULL)||(node->rightChild==NULL)){
+			if(node->leftChild!=NULL){
+				node=node->leftChild;
+			}
+			else{
+				node=node->rightChild;
+			}
+		}
+		else if((node->leftChild!=NULL)&&(node->rightChild!=NULL)){
+
+			struct Node * temp1 = node->rightChild->leftChild;
+			struct Node * temp=node;
+			node=node->rightChild;
+			node->leftChild=temp->leftChild;
+		}
+	}
+	else{
+		if(node->name<name){
+			node->rightChild=delete(node->rightChild,name);
+		}
+		else{
+			node->leftChild=delete(node->leftChild,name);
+		}
+	}
+	return node;
+}
+
+
+void search(struct Node * node, char * name){
+	//Notice in this block we will determine if right or left leaning
+	if(node == NULL){
+		printf("\nThis name is not in our list");
+	}
+	else if(strcmp(name, node->name)==0){
+		printf("\nThis name is in our list");
+	}
+	else if(strcmp(name, node->name)<0){
+		search(node -> rightChild, name);
+	}
+	else if(strcmp(name, node->name)>0){
+		search(node -> leftChild, name);
+	}
+}
 //And finally a print method from first to last
 void print(struct Node * root){
 	if(root != NULL){
-		print(root -> leftChild);
 		print(root -> rightChild);
-		printf("%s\n",root -> name);
+		printf("\n%s",root -> name);
+		print(root -> leftChild);
 	}
 }
 
@@ -68,21 +117,29 @@ int main(void) {
 	struct Node * root = NULL;
 	int i,lines =0;
 
+	//
+	//	char *contents;
+	//	size_t len = 0;
+	//	while(getline(&contents, &len,	ipf)!=EOF){
+	//		root=insert(root,contents);
+	//	}
 
-	char *contents;
-	size_t len = 0;
-	while(getline(&contents, &len,	ipf)!=EOF){
-		root=insert(root,contents);
-	}
-
-	//	root=insert(root,"Ateve Jobs");
-	//	root=insert(root,"Bhil B");
-	//	root=insert(root,"Chh al");
-
+	root=insert(root,"Steve Jobs");
+	root=insert(root,"Bill Gates");
+	root=insert(root,"Jan Doe");
+	root=insert(root,"Joey Frazure");
+	root=insert(root,"Randy Coture");
+	root=insert(root,"Chuck Liddel");
+	root=insert(root,"Connor McGreggor");
 	print(root);
-
-	fclose(ipf);
-
+	printf("\n-------");
+	printf("\nSearching for Bill Gates");
+	search(root,"Bill Gates");
+	printf("\n-------");
+	printf("\nRemoving Bill Gates");
+	printf("\n---Printing----");
+	root=delete(root,"Bill Gates");
+	print(root);
 	//		int select =0;
 	//		while(select!=4){
 	//			printf("\nPlease enter an option:");
@@ -106,10 +163,12 @@ int main(void) {
 	//
 	//			}
 	//			else{
-	//				printf("\nFuck");
+	//
 	//				return 0;
 	//			}
 	//
 	//		}
+
+	fclose(ipf);
 	return EXIT_SUCCESS;
 }
